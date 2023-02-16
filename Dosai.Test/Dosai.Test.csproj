@@ -21,4 +21,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Dosai.CLT\Dosai.CLT.csproj" />
+    <ProjectReference Include="..\Dosai.Common\Dosai.Common.csproj" />
+  </ItemGroup>
+
 </Project>

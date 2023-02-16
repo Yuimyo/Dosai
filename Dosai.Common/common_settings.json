@@ -1,0 +1,14 @@
+﻿{
+  "Seleniums": {
+    "SeleniumBrowserBrand": "Chrome",
+    "TimeoutSec": 20,
+    "ChromeDriverDirectory": "C:\\selenium\\chromedriver",
+    "ChromeUsesCrx": true,
+    "ChromeCrxDirectory": "C:\\selenium\\crx",
+    "ChromeIsHeadless": false,
+    "EdgeDriverDirectory": "C:\\selenium\\edgedriver",
+    "EdgeIsHeadless": false,
+    "FirefoxDriverDirectory": "C:\\selenium\\geckodriver",
+    "FirefoxIsHeadless": false
+  }
+}
