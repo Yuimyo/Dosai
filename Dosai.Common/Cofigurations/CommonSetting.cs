@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Dosai.Common.Configurators
+namespace Dosai.Common.Configurations
 {
     public class CommonSetting
     {

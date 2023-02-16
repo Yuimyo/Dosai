@@ -20,7 +20,7 @@ namespace Dosai.Test
         [Fact]
         public void testNameof()
         {
-            var name = nameof(Dosai.Common.Configurators.CommonSetting.Seleniums);
+            var name = nameof(Dosai.Common.Configurations.CommonSetting.Seleniums);
             Assert.Equal("Seleniums", name);
             output.WriteLine(name);
         }

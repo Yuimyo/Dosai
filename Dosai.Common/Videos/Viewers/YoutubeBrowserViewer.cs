@@ -11,7 +11,7 @@ using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium.DevTools.V107.SystemInfo;
 using Dosai.Common.Utils;
-using Dosai.Common.Configurators;
+using Dosai.Common.Configurations;
 using Microsoft.Extensions.Configuration;
 
 namespace Dosai.Common.Videos.Viewers

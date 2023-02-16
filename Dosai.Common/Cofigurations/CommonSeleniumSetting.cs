@@ -1,6 +1,6 @@
 ﻿using Dosai.Common.Videos.Viewers;
 
-namespace Dosai.Common.Configurators
+namespace Dosai.Common.Configurations
 {
     public class CommonSeleniumSetting
     {
