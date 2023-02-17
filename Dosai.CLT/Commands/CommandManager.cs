@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Serilog;
+﻿using Serilog;
 using Dosai.CLT.Commands.Protocols;
 using Dosai.CLT.Exceptions;
-using Dosai.Common.Videos;
-using OpenQA.Selenium;
 
 namespace Dosai.CLT.Commands
 {
