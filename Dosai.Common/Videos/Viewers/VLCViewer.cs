@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Configuration;
+using Serilog;
 using LibVLCSharp.Shared;
-using Microsoft.Extensions.Configuration;
 using Dosai.Common.Utils;
 using Dosai.Common.Configurations;
 
@@ -14,37 +10,44 @@ namespace Dosai.Common.Videos.Viewers
     {
         private static readonly CommonVLCSetting config = CommonSetting.Root.GetSection(nameof(CommonSetting.VLCs)).Get<CommonVLCSetting>() ?? new CommonVLCSetting();
 
-        // TODO: libVLCのDisposing？
+        private static bool loadedOnce = false;
         private static LibVLC? libVLC;
-        private static bool loadedLibVLC = false;
-        private static void tryToLoadLibVLC()
-        {
-            if (loadedLibVLC)
-                return;
-            loadedLibVLC = true;
+        private static readonly string[] libVLCOptions = new string[] { };
 
-            Core.Initialize();
-            libVLC = new LibVLC(config.EnableDebugLogs);
-        }
+        private static readonly Dictionary<uint, VLCViewer> vlcViewers = new Dictionary<uint, VLCViewer>();
+        private static uint latestId = 0;
 
+        private uint id;
         private readonly MediaPlayer mediaPlayer;
         private readonly Media media;
         public VLCViewer(Uri uri)
         {
-            tryToLoadLibVLC();
+            if (!loadedOnce)
+            {
+                Core.Initialize();
+                loadedOnce = true;
+            }
+            if (vlcViewers.Count == 0)
+            {
+                libVLC = new LibVLC(config.EnableDebugLogs, libVLCOptions);
+                if (config.EnableDebugLogs)
+                {
+                    libVLC.Log += LibVLC_Log;
+                    Log.Information("Constructed libVLC.");
+                }
+            }
             if (libVLC == null)
-                throw new NullReferenceException();
+                throw new VLCException("libVLC is null.");
 
+            this.id = latestId++;
+            vlcViewers[id] = this;
             this.media = new Media(libVLC, uri);
             this.mediaPlayer = new MediaPlayer(media);
-            initialize();
         }
-        
-        private void initialize()
+
+        private void LibVLC_Log(object? sender, LogEventArgs e)
         {
-            // TODO: 予約して何回かトライする。ダメならthrowしたほうがよさそう
-            if (!media.IsParsed)
-                this.media.Parse();
+            Log.Debug(e.ToString());
         }
 
         public string Title => media.GetFileTitle();
@@ -83,6 +86,7 @@ namespace Dosai.Common.Videos.Viewers
             {
                 if (value < 0 || 100 < value)
                     throw new ArgumentOutOfRangeException();
+
                 if (Playing)
                 {
                     mediaPlayer.Pause();
@@ -132,6 +136,19 @@ namespace Dosai.Common.Videos.Viewers
                     mediaPlayer.Stop();
                 mediaPlayer.Dispose();
                 media.Dispose();
+                
+                vlcViewers.Remove(this.id);
+                if (vlcViewers.Count == 0)
+                {
+                    if (libVLC != null)
+                    {
+                        libVLC.Log -= LibVLC_Log;
+                        libVLC.Dispose();
+                        libVLC = null;
+                        if (config.EnableDebugLogs)
+                            Log.Information("Disposed libVLC.");
+                    }
+                }
 
                 // TODO: 大きなフィールドを null に設定します
                 disposedValue = true;
