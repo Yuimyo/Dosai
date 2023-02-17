@@ -200,6 +200,12 @@ namespace Dosai.Common.Videos.Viewers
 
                 IWebElement currentTimeEl = driver.FindElement(By.CssSelector("span[class='ytp-time-current']"));
 
+                // For updating current time value.
+                var actions = new Actions(driver);
+                actions.MoveToElement(currentTimeEl);
+                actions.MoveByOffset(1, 0);
+                actions.Perform();
+
                 var text = currentTimeEl.GetAttribute("textContent").Trim();
                 var values = text.Split(":");
                 int hours = 0, minutes = 0, seconds = 0;
