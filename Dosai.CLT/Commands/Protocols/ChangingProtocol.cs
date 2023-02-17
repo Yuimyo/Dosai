@@ -57,10 +57,18 @@ namespace Dosai.CLT.Commands.Protocols
             if (volume != null)
             {
                 var value = volume ?? 0;
-                videoController.SetVolume(videoId, value);
-                changed = true;
-                Log.Information("The video's([{VideoId}]) volume is succesfully changed({Volume}).",
-                    videoId, value);
+                if (value < 0 || 100 < value)
+                {
+                    Log.Information("Volume value({Volume}) is out of range. This manipulation will be ignored.",
+                        value);
+                }
+                else
+                {
+                    videoController.SetVolume(videoId, value);
+                    changed = true;
+                    Log.Information("The video's([{VideoId}]) volume is succesfully changed({Volume}).",
+                        videoId, value);
+                }
             }
             if (!changed)
             {

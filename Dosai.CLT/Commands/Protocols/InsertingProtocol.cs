@@ -18,8 +18,16 @@ namespace Dosai.CLT.Commands.Protocols
         public void Run(Dictionary<string, string> kvs)
         {
             kvs.Must(out string url, "url", "u");
-            kvs.Any(out TimeSpan? offset, "offset", "o");
-            kvs.Any(out int? volume, "volume", "v");
+            kvs.Any(out TimeSpan? _offset, "offset", "o");
+            kvs.Any(out int? _volume, "volume", "v");
+            TimeSpan offset = _offset ?? TimeSpan.Zero;
+            int volume = _volume ?? 100;
+
+            if (volume < 0 || 100 < volume)
+            {
+                volume = MathHelper.Clamp(volume, 0, 100);
+                Log.Information("Volume value is out of range. Clamped.");
+            }
 
             if (videoController.IsPlaying)
             {
@@ -28,7 +36,7 @@ namespace Dosai.CLT.Commands.Protocols
             }
 
             uint videoId = videoController.Register(
-                () => VideoHelper.PickupVideo(url, offset ?? TimeSpan.Zero, volume ?? 100));
+                () => VideoHelper.PickupVideo(url, offset, volume));
             var detail = videoController.GetDetail(videoId);
             var title = detail.Title.Omit(20);
             Log.Information("The video({Title}) is now registered (Id: [{VideoId}], Offset: {Offset}, Volume: {Volume}).",
