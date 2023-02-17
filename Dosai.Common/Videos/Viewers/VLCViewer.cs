@@ -12,7 +12,10 @@ namespace Dosai.Common.Videos.Viewers
 
         private static bool loadedOnce = false;
         private static LibVLC? libVLC;
-        private static readonly string[] libVLCOptions = new string[] { };
+        private static readonly string[] libVLCOptions = new string[]
+        {
+            "--aout=directsound" // https://stackoverflow.com/questions/60966365/c-sharp-vlc-forms-volume-stabilization-problem
+        };
 
         private static readonly Dictionary<uint, VLCViewer> vlcViewers = new Dictionary<uint, VLCViewer>();
         private static uint latestId = 0;
