@@ -24,7 +24,14 @@ namespace Dosai.CLT.Commands.Utils
             {
                 if (kvs.ContainsKey(key))
                 {
-                    res = parser(kvs[key]);
+                    try
+                    {
+                        res = parser(kvs[key]);
+                    }
+                    catch (FormatException ex)
+                    {
+                        throw new InvalidCommandException();
+                    }
                     return;
                 }
             }
