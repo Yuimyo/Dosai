@@ -46,20 +46,21 @@ namespace Dosai.CLT.Commands.Protocols
                     }
                     else
                     {
-                        detail.Offset = value;
+                        videoController.SetOffset(videoId, value);
                         changed = true;
                         Log.Information("The video's([{VideoId}]) offset is succesfully changed({Offset}).",
-                            videoId, detail.Offset);
+                            videoId, value);
                     }
                 }
             }
 
             if (volume != null)
             {
-                detail.Volume = volume ?? 0;
+                var value = volume ?? 0;
+                videoController.SetVolume(videoId, value);
                 changed = true;
                 Log.Information("The video's([{VideoId}]) volume is succesfully changed({Volume}).",
-                    videoId, detail.Volume);
+                    videoId, value);
             }
             if (!changed)
             {
