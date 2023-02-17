@@ -19,8 +19,13 @@ namespace Dosai.CLT.Commands.Protocols
         {
             Log.Information($"Videos will be listed below:");
             foreach (var d in videoController.GetDetailAll())
-                Log.Information("[{VideoId}]({CurrentTime}/{Duration} {Volume}) {Title}",
-                    d.VideoId, d.CurrentTime.ToString(@"hh\:mm\:ss"), d.Duration.ToString(@"hh\:mm\:ss"), d.Volume, d.Title.Omit(50));
+                Log.Information("[{VideoId}](Time: {CurrentTime}/{Duration}, Volume: {Volume}, Offset: {Offset}) {Title}",
+                    d.VideoId, 
+                    d.CurrentTime.ToString(@"hh\:mm\:ss"), 
+                    d.Duration.ToString(@"hh\:mm\:ss"), 
+                    d.Volume, 
+                    d.Offset.ToString(@"hh\:mm\:ss"), 
+                    d.Title.Omit(50));
             Log.Information($"-----------------");
         }
     }
