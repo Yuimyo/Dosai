@@ -50,7 +50,7 @@ namespace Dosai.Common.Videos.Viewers
 
         private void LibVLC_Log(object? sender, LogEventArgs e)
         {
-            Log.Debug(e.ToString());
+            Log.Debug(e.FormattedLog);
         }
 
         public string Title => media.GetFileTitle();
