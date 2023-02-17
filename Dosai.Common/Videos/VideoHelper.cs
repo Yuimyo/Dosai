@@ -18,6 +18,10 @@ namespace Dosai.Common.Videos
                         var ytVideoId = q["v"];
                         return new Video(new YoutubeBrowserViewer(ytVideoId), offset, volume);
                     }
+                case VideoContentType.File:
+                    {
+                        return new Video(new VLCViewer(u), offset, volume);
+                    }
                 default:
                 case VideoContentType.Null: throw new InvalidUrlException();
             }
@@ -25,6 +29,12 @@ namespace Dosai.Common.Videos
 
         private static VideoContentType classifyVideoUri(Uri u)
         {
+            switch(u.GetLeftPart(UriPartial.Scheme)) 
+            {
+                case "file://":
+                    return VideoContentType.File;
+                default: break;
+            }
             switch (u.GetLeftPart(UriPartial.Path))
             {
                 case "https://www.youtube.com/watch":
@@ -43,5 +53,6 @@ namespace Dosai.Common.Videos
     {
         Null,
         Youtube,
+        File,
     }
 }

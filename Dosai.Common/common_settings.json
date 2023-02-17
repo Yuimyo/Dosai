@@ -10,5 +10,8 @@
     "EdgeIsHeadless": false,
     "FirefoxDriverDirectory": "C:\\selenium\\geckodriver",
     "FirefoxIsHeadless": false
+  },
+  "VLCs": {
+    "EnableDebugLogs": false
   }
 }
