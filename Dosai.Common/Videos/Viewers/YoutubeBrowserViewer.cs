@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Configuration;
+using Serilog;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
-using OpenQA.Selenium.DevTools.V107.SystemInfo;
 using Dosai.Common.Utils;
 using Dosai.Common.Configurations;
-using Microsoft.Extensions.Configuration;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Dosai.Common.Videos.Viewers
 {
@@ -203,8 +199,36 @@ namespace Dosai.Common.Videos.Viewers
                 if (disposedValue)
                     return TimeSpan.Zero;
 
-                var text = driver.FindElement(By.CssSelector("span[class='ytp-time-current']")).GetAttribute("textContent").Trim();
-                return TimeSpan.Parse(text);
+                IWebElement currentTimeEl = driver.FindElement(By.CssSelector("span[class='ytp-time-current']"));
+
+                // For updating current time value.
+                var actions = new Actions(driver);
+                actions.MoveToElement(currentTimeEl);
+                actions.MoveByOffset(1, 0);
+                actions.Perform();
+
+                var text = currentTimeEl.GetAttribute("textContent").Trim();
+                var values = text.Split(":");
+                int hours = 0, minutes = 0, seconds = 0;
+                if (values.Length == 3)
+                {
+                    hours = StringParser.ToInt(values[0]);
+                    minutes = StringParser.ToInt(values[1]);
+                    seconds = StringParser.ToInt(values[2]);
+                }
+                else if (values.Length == 2)
+                {
+                    minutes = StringParser.ToInt(values[0]);
+                    seconds = StringParser.ToInt(values[1]);
+                }
+                else
+                {
+                    Log.Error("Invalid current time value has fetched (\"{CurrentTime}\").",
+                        text);
+                    throw new InvalidDataException();
+                }
+
+                return new TimeSpan(hours, minutes, seconds);
             }
             set
             {
@@ -229,13 +253,28 @@ namespace Dosai.Common.Videos.Viewers
                 if (disposedValue)
                     return TimeSpan.Zero;
 
-                var values = driver.FindElement(By.CssSelector("span[class='ytp-time-duration']")).GetAttribute("textContent").Trim().Split(":");
+                var text = driver.FindElement(By.CssSelector("span[class='ytp-time-duration']")).GetAttribute("textContent").Trim();
+                var values = text.Split(":");
+                int hours = 0, minutes = 0, seconds = 0;
+                if (values.Length == 3)
+                {
+                    hours = StringParser.ToInt(values[0]);
+                    minutes = StringParser.ToInt(values[1]);
+                    seconds = StringParser.ToInt(values[2]);
+                }
+                else if (values.Length == 2)
+                {
+                    minutes = StringParser.ToInt(values[0]);
+                    seconds = StringParser.ToInt(values[1]);
+                }
+                else
+                {
+                    Log.Error("Invalid duration value has fetched (\"{Duration}\").",
+                        text);
+                    throw new InvalidDataException();
+                }
 
-                if (values.Length == 1)
-                    return new TimeSpan(0, 0, int.Parse(values[0]));
-                if (values.Length == 2)
-                    return new TimeSpan(0, int.Parse(values[0]), int.Parse(values[1]));
-                return new TimeSpan(int.Parse(values[0]), int.Parse(values[1]), int.Parse(values[2]));
+                return new TimeSpan(hours, minutes, seconds);
             }
         }
 

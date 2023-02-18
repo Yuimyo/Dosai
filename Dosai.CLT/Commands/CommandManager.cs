@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Serilog;
+﻿using Serilog;
 using Dosai.CLT.Commands.Protocols;
 using Dosai.CLT.Exceptions;
-using Dosai.Common.Videos;
-using OpenQA.Selenium;
 
 namespace Dosai.CLT.Commands
 {
@@ -49,7 +42,10 @@ namespace Dosai.CLT.Commands
 
         private (string Order, Dictionary<string, string> KeyValues) parse(string line)
         {
-            var values = line.Trim().Split(" ");
+            string[] values = splitCommandLine(line).ToArray();
+            if (values.Length == 0)
+                throw new InvalidCommandException();
+
             string order = values[0];
             var kvs = new Dictionary<string, string>();
             for (int i = 1; i < values.Length;)
@@ -66,6 +62,38 @@ namespace Dosai.CLT.Commands
             }
             return (order, kvs);
         }
+
+        private static IEnumerable<string> splitCommandLine(string commandLine)
+        {
+            bool inQuotes = false;
+
+            return split(commandLine, c =>
+            {
+                if (c == '\"')
+                    inQuotes = !inQuotes;
+
+                return !inQuotes && c == ' ';
+            })
+                .Select(arg => arg.Trim().Replace("\"", ""))
+                .Where(arg => !string.IsNullOrEmpty(arg));
+        }
+
+        public static IEnumerable<string> split(string str, Func<char, bool> controller)
+        {
+            int nextPiece = 0;
+
+            for (int c = 0; c < str.Length; c++)
+            {
+                if (controller(str[c]))
+                {
+                    yield return str.Substring(nextPiece, c - nextPiece);
+                    nextPiece = c + 1;
+                }
+            }
+
+            yield return str.Substring(nextPiece);
+        }
+
 
         private void runProtocol(string order, Dictionary<string, string> kvs)
         {

@@ -53,6 +53,20 @@ namespace Dosai.Common.Videos
             videos.Remove(videoId);
         }
 
+        public void SetOffset(uint videoId, TimeSpan offset)
+        {
+            if (!HasVideo(videoId))
+                throw new VideoNotFoundException();
+            videos[videoId].Offset = offset;
+        }
+
+        public void SetVolume(uint videoId, int volume)
+        {
+            if (!HasVideo(videoId))
+                throw new VideoNotFoundException();
+            videos[videoId].Volume = volume;
+        }
+
         public void Play()
         {
             foreach (var video in videos.Values)
